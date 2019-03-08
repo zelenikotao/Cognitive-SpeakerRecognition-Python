@@ -16,6 +16,7 @@ class VerificationServiceHttpClientHelper:
     _BASE_URI = 'westus.api.cognitive.microsoft.com'
     _VERIFICATION_PROFILES_URI = '/spid/v1.0/verificationProfiles'
     _VERIFICATION_URI = '/spid/v1.0/verify'
+    _VERIFICATION_PHRASES_URI = '/spid/v1.0/verificationPhrases'
     _SUBSCRIPTION_KEY_HEADER = 'Ocp-Apim-Subscription-Key'
     _CONTENT_TYPE_HEADER = 'Content-Type'
     _JSON_CONTENT_HEADER_VALUE = 'application/json'
@@ -49,6 +50,30 @@ class VerificationServiceHttpClientHelper:
                 raise Exception('Error getting all profiles: ' + reason)
         except:
             logging.error('Error getting all profiles.')
+            raise
+
+    def get_all_phrases(self, locale):
+        """Returns the list of supported verification phrases that can be used for enroll_profile and verify_file."""
+        try:
+            # Prepare the request
+            request_url = '{}?locale={}'.format(
+                self._VERIFICATION_PHRASES_URI,
+                urllib.parse.quote(locale))
+
+            res, message = self._send_request(
+                'GET',
+                self._BASE_URI,
+                request_url,
+                self._JSON_CONTENT_HEADER_VALUE)
+
+            if res.status == self._STATUS_OK:
+                phrases_raw = json.loads(message)
+                return [element["phrase"] for element in phrases_raw]
+            else:
+                reason = reason if not message else message
+                raise Exception('Error getting all phrases: ' + reason)
+        except:
+            logging.error('Error getting all phrases.')
             raise
 
     def create_profile(self, locale):
