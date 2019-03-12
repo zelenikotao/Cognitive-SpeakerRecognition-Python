@@ -254,7 +254,8 @@ class VerificationServiceHttpClientHelper:
                 return VerificationResponse.VerificationResponse(json.loads(message))
             else:
                 reason = res.reason if not message else message
-                raise Exception('Error verifying audio from file: ' + reason)
+                # raise Exception('Error verifying audio from file: ' + reason)
+                return json.loads(reason)
         except:
             logging.error('Error performing verification.')
             raise
